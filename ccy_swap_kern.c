@@ -34,7 +34,7 @@ int pre_do_swap_page(struct pt_regs *regs)
 	else
 	{
 		value->time_swap = ccy_time_do_swap_page;
-		bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
+		//bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u call do_swap_page!\n";
 	// bpf_trace_printk(fmt, sizeof(fmt) , kpid, tpid);
@@ -55,7 +55,7 @@ int pre_swap_readpage(struct pt_regs *regs)
 	else
 	{
 		value->time_pre_read = ccy_time_swap_readpage;
-		bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
+		//bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u after call swap_readpage!\n";
 	// bpf_trace_printk(fmt, sizeof(fmt) , kpid, tpid);
