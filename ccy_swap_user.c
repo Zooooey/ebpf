@@ -6,9 +6,9 @@
 #include "bpf_load.h"
 #include "bpf_util.h"
 struct cost_ctx {
-	long do_swap_page; // start time of 'do_swap_page' being called.
-	long frontswap_load;// end time after 'frontswap_load' been called.
-	long swap_readpage;// end time after 'swap_readpage' been called.
+	uint64_t pre_do_swap_page; 
+	uint64_t pre_swap_readpage;
+	uint64_t post_swap_readpage;
 };
 
 int main(int argc, char **argv)
