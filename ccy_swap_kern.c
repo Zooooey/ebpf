@@ -26,15 +26,15 @@ int pre_do_swap_page(struct pt_regs *regs)
 	u32 kpid = bpf_get_current_pid_tgid() >> 32;
 	u32 tpid = bpf_get_current_pid_tgid() & 0xFFFFFFFF;
 	u64 ccy_time_do_swap_page = bpf_ktime_get_ns();
-	struct cost_ctx *value = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
-	if (!value)
+	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
+	if (!val)
 	{
 		bpf_trace_printk("tpid:%lu not in bpf map!\n", tpid);
 	}
 	else
 	{
-		value->time_swap = ccy_time_do_swap_page;
-		//bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
+		val->time_swap = ccy_time_do_swap_page;
+		//bpf_map_update_elem(&ctx_map, &tpid, &val, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u call do_swap_page!\n";
 	// bpf_trace_printk(fmt, sizeof(fmt) , kpid, tpid);
@@ -47,15 +47,15 @@ int pre_swap_readpage(struct pt_regs *regs)
 	u32 kpid = bpf_get_current_pid_tgid() >> 32;
 	u32 tpid = bpf_get_current_pid_tgid() & 0xFFFFFFFF;
 	u64 ccy_time_swap_readpage = bpf_ktime_get_ns();
-	struct cost_ctx *value = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
-	if (!value)
+	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
+	if (!val)
 	{
 		bpf_trace_printk("tpid:%lu not in bpf map!\n", tpid);
 	}
 	else
 	{
-		value->time_pre_read = ccy_time_swap_readpage;
-		//bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
+		val->time_pre_read = ccy_time_swap_readpage;
+		//bpf_map_update_elem(&ctx_map, &tpid, &val, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u after call swap_readpage!\n";
 	// bpf_trace_printk(fmt, sizeof(fmt) , kpid, tpid);
@@ -68,16 +68,16 @@ int post_swap_readpage(struct pt_regs *regs)
 	u64 now = bpf_ktime_get_ns();
 	u32 kpid = bpf_get_current_pid_tgid() >> 32;
 	u32 tpid = bpf_get_current_pid_tgid() & 0xFFFFFFFF;
-	struct cost_ctx *value = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
-	if (!value)
+	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
+	if (!val)
 	{
 		bpf_trace_printk("tpid:%lu not in bpf map\n", tpid);
 	}
 	else
 	{
 		
-		u64 kernel_stack = value->time_pre_read - value->time_swap;
-		u64 read_disk = now - value->time_pre_read;
+		u64 kernel_stack = val->time_pre_read - val->time_swap;
+		u64 read_disk = now - val->time_pre_read;
 		char fmt[] = "pid: %u tpid:%u after call swap_readpage! \n";
 		bpf_trace_printk(fmt, sizeof(fmt), kpid, tpid);
 		char cost[] = "kernel_stack:%lu us read_ssd:%lu us\n";
