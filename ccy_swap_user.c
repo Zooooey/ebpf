@@ -23,9 +23,9 @@ int main(int argc, char **argv)
 		pid_t pid = getpid();
 		printf("user space pid :%u\n",pid);
 		struct cost_ctx value = {
-			.pre_do_swap_page=0,
-			.pre_swap_readpage=0,
-			.post_swap_readpage=0,
+			.time_swap=0,
+			.time_pre_read=0,
+			.time_post_read=0,
 		};
 		int ret = bpf_map_update_elem(fd, &pid, &value, 0);
 		if(ret == 0)    {

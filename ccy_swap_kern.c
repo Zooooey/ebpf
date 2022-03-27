@@ -33,7 +33,7 @@ int pre_do_swap_page(struct pt_regs *regs)
 	}
 	else
 	{
-		value->pre_do_swap_page = ccy_time_do_swap_page;
+		value->time_swap = ccy_time_do_swap_page;
 		bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u call do_swap_page!\n";
@@ -54,7 +54,7 @@ int pre_swap_readpage(struct pt_regs *regs)
 	}
 	else
 	{
-		value->pre_swap_readpage = ccy_time_swap_readpage;
+		value->time_pre_read = ccy_time_swap_readpage;
 		bpf_map_update_elem(&ctx_map, &tpid, &value, 0);
 	}
 	// char fmt[] = "pid: %u tpid:%u after call swap_readpage!\n";
@@ -76,8 +76,8 @@ int post_swap_readpage(struct pt_regs *regs)
 	else
 	{
 		
-		u64 kernel_stack = value->pre_swap_readpage - value->pre_do_swap_page;
-		u64 read_disk = now - value->pre_swap_readpage;
+		u64 kernel_stack = value->time_pre_read - value->time_swap;
+		u64 read_disk = now - value->time_pre_read;
 		char fmt[] = "pid: %u tpid:%u after call swap_readpage! \n";
 		bpf_trace_printk(fmt, sizeof(fmt), kpid, tpid);
 		char cost[] = "kernel_stack:%lu us read_ssd:%lu us\n";
