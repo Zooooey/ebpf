@@ -29,7 +29,8 @@ int pre_do_swap_page(struct pt_regs *regs)
 	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
 	if (!val)
 	{
-		bpf_trace_printk("tpid:%lu not in bpf map!\n", tpid);
+		char fmt[] = "tpid:%lu not in bpf map!\n";
+		bpf_trace_printk(fmt, sizof(fmt), tpid);
 	}
 	else
 	{
