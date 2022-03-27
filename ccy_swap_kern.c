@@ -50,7 +50,8 @@ int pre_swap_readpage(struct pt_regs *regs)
 	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
 	if (!val)
 	{
-		bpf_trace_printk("tpid:%lu not in bpf map!\n", tpid);
+		char fmt[] = "tpid:%lu not in bpf map!\n";
+		bpf_trace_printk(fmt, sizof(fmt), tpid);
 	}
 	else
 	{
@@ -71,11 +72,11 @@ int post_swap_readpage(struct pt_regs *regs)
 	struct cost_ctx *val = (struct cost_ctx *)bpf_map_lookup_elem(&ctx_map, &tpid);
 	if (!val)
 	{
-		bpf_trace_printk("tpid:%lu not in bpf map\n", tpid);
+		char fmt[] = "tpid:%lu not in bpf map!\n";
+		bpf_trace_printk(fmt, sizof(fmt), tpid);
 	}
 	else
 	{
-		
 		u64 kernel_stack = val->time_pre_read - val->time_swap;
 		u64 read_disk = now - val->time_pre_read;
 		char fmt[] = "pid: %u tpid:%u after call swap_readpage! \n";
